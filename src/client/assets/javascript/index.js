@@ -38,13 +38,11 @@ function setupClickHandlers() {
 
       // Race track form field
       if (target.matches(".card.track")) {
-        console.log("THIS IS TARGET TRACK", target);
         handleSelectTrack(target);
       }
 
       // Podracer form field
       if (target.matches(".card.podracer")) {
-        console.log("THIS IS TARGET POD RACER", target);
         handleSelectPodRacer(target);
       }
 
@@ -77,21 +75,33 @@ async function delay(ms) {
 
 // This async function controls the flow of the race, add the logic and error handling
 async function handleCreateRace() {
-  // render starting UI
-  renderAt("#race", renderRaceStartView());
+  try {
+    // TODO - Get player_id and track_id from the store
+    const { player_id, track_id } = store;
 
-  // TODO - Get player_id and track_id from the store
+    // const race = TODO - invoke the API call to create the race, then save the result
+    const race = await createRace(player_id, track_id);
+    console.log(race);
 
-  // const race = TODO - invoke the API call to create the race, then save the result
+    // render starting UI
+    renderAt("#race", renderRaceStartView(race.Track, race.Cars));
 
-  // TODO - update the store with the race id
+    // TODO - update the store with the race id
+    store.race_id = race.ID;
 
-  // The race has been created, now start the countdown
-  // TODO - call the async function runCountdown
+    // The race has been created, now start the countdown
+    // TODO - call the async function runCountdown
+    await runCountdown();
 
-  // TODO - call the async function startRace
+    // TODO - call the async function startRace
+    const { race_id } = store;
+    console.log(race_id);
+    startRace(`${race_id}`).then(data => console.log("START RACE", data));
 
-  // TODO - call the async function runRace
+    // TODO - call the async function runRace
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function runRace(raceID) {
@@ -121,11 +131,16 @@ async function runCountdown() {
 
     return new Promise(resolve => {
       // TODO - use Javascript's built in setInterval method to count down once per second
+      setInterval(() => {
+        if (timer > 0) {
+          // run this DOM manipulation to decrement the countdown for the user
+          document.getElementById("big-numbers").innerHTML = --timer;
+        }
 
-      // run this DOM manipulation to decrement the countdown for the user
-      document.getElementById("big-numbers").innerHTML = --timer;
-
-      // TODO - if the countdown is done, clear the interval, resolve the promise, and return
+        // TODO - if the countdown is done, clear the interval, resolve the promise, and return
+        clearInterval(timer);
+        resolve();
+      }, 1000);
     });
   } catch (error) {
     console.log(error);
