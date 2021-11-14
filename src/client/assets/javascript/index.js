@@ -87,7 +87,7 @@ async function handleCreateRace() {
     renderAt("#race", renderRaceStartView(race.Track, race.Cars));
 
     // TODO - update the store with the race id
-    store.race_id = race.ID;
+    store.race_id = race.ID - 1;
 
     // The race has been created, now start the countdown
     // TODO - call the async function runCountdown
@@ -379,9 +379,7 @@ function startRace(id) {
   return fetch(`${SERVER}/api/races/${id}/start`, {
     method: "POST",
     ...defaultFetchOpts()
-  })
-    .then(res => res.json())
-    .catch(err => console.log("Problem with getRace request::", err));
+  }).catch(err => console.log("Problem with getRace request::", err));
 }
 
 function accelerate(id) {
